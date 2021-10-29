@@ -1,0 +1,13 @@
+*.dll
+*.cache
+*.pdb
+**/bin
+**/obj
+**/node_modules
+**/.vs
+.config
+Config/
+bin/
+obj/
+lib/
+properties/

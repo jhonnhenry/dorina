@@ -1,0 +1,57 @@
+﻿@{
+    ViewData["Title"] = "Upload de arquivo";
+}
+
+<form asp-action="UploadFile"
+      enctype="multipart/form-data"
+      onsubmit="AJAXSubmit(this);return false;"
+      method="post">
+    <dl>
+        <dt>
+            <label for="theFile">Escolha o arquivo a ser enviado</label>
+        </dt>
+        <dd>
+            <input type="file" id="theFile" name="theFile" multiple />
+        </dd>
+    </dl>
+    <input class="btn btn-primary" type="submit" value="Enviar" />
+
+
+    <br />
+    <br />
+    <br />
+    <br />
+
+    <pre id="json"></pre>
+</form>
+
+<script>    
+
+    function loading(status) {
+        if(status)
+            $('.modalload').fadeIn();
+        else
+            $('.modalload').fadeOut();
+    }
+
+    async function AJAXSubmit(oFormElement) {
+        loading(true);
+        const formData = new FormData(oFormElement);
+        try {
+            await fetch(oFormElement.action, {
+                method: 'POST',
+                body: formData
+            }).then(function (response) {
+                loading(false);
+                response.json().then(function (jsonresult) {
+                    console.log(jsonresult.result)
+                    document.getElementById("json").textContent = JSON.stringify(jsonresult.result, undefined, 2);
+                });
+            });
+
+        } catch (error) {
+            loading(false);
+            console.error('Error:', error);
+        }
+    }
+</script>
