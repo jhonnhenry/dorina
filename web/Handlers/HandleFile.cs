@@ -12,6 +12,11 @@ using System.Reflection;
 using System.Drawing.Imaging;
 using web.Models;
 
+using org.pdfclown.bytes;
+using org.pdfclown.documents;
+using files = org.pdfclown.files;
+using org.pdfclown.objects;
+
 namespace web.Handlers
 {
     public class HandleFile
@@ -25,7 +30,6 @@ namespace web.Handlers
                 {
                     if (formFile.Length > 0)
                     {
-                        var filePath = Path.GetTempFileName();
                         var _docLib = DocLib.Instance;
 
                         using (MemoryStream memoryStream = new MemoryStream())
@@ -55,6 +59,7 @@ namespace web.Handlers
                                 {
                                     Success = true,
                                     Filename = formFile.FileName,
+                                    ImagesFound = await CountImagesAsync(formFile),
                                     Message = "Arquivo processado com sucesso"
                                 };
 
@@ -63,15 +68,6 @@ namespace web.Handlers
                                     try
                                     {
                                         var pageReader = docReader.GetPageReader(i);
-
-
-
-
-
-
-
-
-
 
                                         //Pega o texto da página
                                         var pdfText = pageReader.GetText();
@@ -99,8 +95,8 @@ namespace web.Handlers
                                                     Page = i + 1,
                                                     Success = true,
                                                     SuccessRate = rate,
-                                                    Text = pdfText,
-                                                    OCRText = theTextOfImage
+                                                    Text = pdfText.Replace("\n", " ").Replace("\r", ""),
+                                                    OCRText = theTextOfImage.Replace("\n", " ").Replace("\r", "")
                                                 });
                                             }
                                         }
@@ -145,16 +141,46 @@ namespace web.Handlers
             return uploadResult;
         }
 
-
         private static void AddBytes(Bitmap bmp, byte[] rawBytes)
         {
-            var rect = new Rectangle(0, 0, bmp.Width, bmp.Height);
+            var rect = new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height);
 
             var bmpData = bmp.LockBits(rect, ImageLockMode.WriteOnly, bmp.PixelFormat);
             var pNative = bmpData.Scan0;
 
             Marshal.Copy(rawBytes, 0, pNative, rawBytes.Length);
             bmp.UnlockBits(bmpData);
+        }
+
+        public async Task<int> CountImagesAsync(IFormFile formFile)
+        {
+            int count = 0;
+            var filePath = Path.GetTempFileName();
+            using (var stream = File.Create(filePath))
+            {
+                await formFile.CopyToAsync(stream);
+            }
+            using (files::File file = new files::File(filePath))
+            {
+                foreach (PdfIndirectObject indirectObject in file.IndirectObjects)
+                {
+                    // Get the data object associated to the indirect object!
+                    PdfDataObject dataObject = indirectObject.DataObject;
+                    // Is this data object a stream?
+                    if (dataObject is PdfStream)
+                    {
+                        PdfDictionary header = ((PdfStream)dataObject).Header;
+                        // Is this stream an image?
+                        if (header.ContainsKey(PdfName.Type)
+                          && header[PdfName.Type].Equals(PdfName.XObject)
+                          && header[PdfName.Subtype].Equals(PdfName.Image))
+                        {
+                            count++;
+                        }
+                    }
+                }
+            }
+            return count;
         }
     }
 

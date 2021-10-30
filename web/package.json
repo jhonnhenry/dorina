@@ -1,0 +1,47 @@
+{
+  "name": "dorina",
+  "version": "1.0.0",
+  "description": "O objetivo deste projeto é contribuir com a acessibilidade de deficiêntes visuais. Dorina de Gouvêa Nowill foi um dos principais nomes na luta pelos direitos dos cegos no Brasil.",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jhonnhenry/dorina.git"
+  },
+  "keywords": [
+    "Acessibilidade",
+    "deficiencia",
+    "visual"
+  ],
+  "author": "Jhonatas Lima e Ângelo Astacciarini",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jhonnhenry/dorina/issues"
+  },
+  "homepage": "https://github.com/jhonnhenry/dorina#readme",
+  "dependencies": {
+    "bootstrap": "^5.1.3",
+    "@fortawesome/fontawesome-free": "^5.15.3",
+    "@fortawesome/free-solid-svg-icons": "^5.15.4",
+    "@popperjs/core": "^2.9.2",
+    "animate.css": "^3.7.2",
+    "@pnotify/animate": "^5.2.0",
+    "@pnotify/core": "^5.2.0",
+    "@pnotify/countdown": "^5.2.0",
+    "@pnotify/font-awesome5": "^5.2.0",
+    "@pnotify/font-awesome5-fix": "^5.2.0",
+    "@pnotify/mobile": "^5.2.0"
+  },
+  "devDependencies": {
+    "fs-extra": "^10.0.0",
+    "gulp": "^4.0.2",
+    "gulp-concat": "^2.6.1",
+    "gulp-sass": "^5.0.0",
+    "merge-stream": "^2.0.0",
+    "node-sass": "^6.0.1",
+    "rimraf": "^3.0.2",
+    "uglify-js": "^3.13.10"
+  }
+}

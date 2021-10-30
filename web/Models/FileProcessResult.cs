@@ -14,8 +14,9 @@ namespace web.Models
             PagesResult = new List<PageProcessResult>();
         }
         public bool Success { get; set; }
-        public string Filename { get; internal set; }
-        public string Message { get; internal set; }
+        public string Filename { get; set; }
+        public string Message { get; set; }
         public List<PageProcessResult> PagesResult { get; set; }
+        public int ImagesFound { get; set; }
     }
 }
