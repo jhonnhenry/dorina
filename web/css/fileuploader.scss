@@ -1,0 +1,14 @@
+﻿
+
+
+.fileuploadcontainer {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    text-align:center;
+    line-height: 3;
+
+    label {
+        font-size:16px;
+    }
+}

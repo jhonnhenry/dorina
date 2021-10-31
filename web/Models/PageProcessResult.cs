@@ -7,10 +7,13 @@ namespace web.Models
 {
     public class PageProcessResult
     {
-        public bool Success { get; set; }
-        public string SuccessRate { get; set; }
-        public string Text { get; set; }
         public int Page { get; internal set; }
-        public string OCRText { get; internal set; }
+        public string Text { get; set; }
+        public string OCRText { get; set; }
+        public int TotalCharacters { get; set; }
+        public int TotalCharactersFromOCR { get; set; }
+        public float OCRSuccessRate { get; set; }
+        public float DiffPercent { get; set; }
+        public string FinalResult { get; set; }
     }
 }

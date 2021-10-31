@@ -7,9 +7,7 @@ function loading(status) {
 }
 
 $(document).ready(function () {
-
-
-
+    loading(true);
 });
 
 

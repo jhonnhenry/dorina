@@ -1,0 +1,24 @@
+﻿
+
+<div class="accordion accordion-flush" id="accordionExample">
+
+</div>
+
+<script id="pageProcessResultTemplate" type="text/x-handlebars-template">
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="headingOne">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ page }}" aria-expanded="true" aria-controls="collapseOne">
+                Detalhamento da página {{ page }}
+            </button>
+        </h2>
+        <div id="collapse{{ page }}" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                <p><strong>Taxa de sucesso de extração do texto:</strong> <span>{{ ocrSuccessRate }}%</span></p>
+                <p><strong>Total de caracteres lidos sem OCR:</strong> <span>{{ totalCharacters }}</span></p>
+                <p><strong>Total de caracteres lidos com OCR:</strong> <span>{{ totalCharactersFromOCR }}</span></p>
+                <p><strong>Diferença entre leituras:</strong> <span>{{ diffPercent }}%</span></p>
+                <p><strong>Resultado:</strong> <span>{{ finalResult }}</span></p>
+            </div>
+        </div>
+    </div>
+</script>

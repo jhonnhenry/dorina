@@ -18,5 +18,9 @@ namespace web.Models
         public string Message { get; set; }
         public List<PageProcessResult> PagesResult { get; set; }
         public int ImagesFound { get; set; }
+        public float OCRSuccessAverageRate { get; set; }
+        public float AverageDiffPercent { get; set; }
+        public string FinalResult { get; internal set; }
+        public int TotalPages { get; internal set; }
     }
 }

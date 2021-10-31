@@ -77,7 +77,7 @@ namespace web.Handlers
                                         var height = pageReader.GetPageHeight();
                                         var rawBytes = pageReader.GetImage();
                                         var bmp = new Bitmap(width, height, PixelFormat.Format32bppArgb);
-                                        AddBytes(bmp, rawBytes);
+                                        BitmapHandle.AddBytes(bmp, rawBytes);
 
                                         string pageImagefilename = $"{pageImagesPath}\\{DateTime.Now.Ticks.ToString()}.png";
                                         bmp.Save(pageImagefilename, System.Drawing.Imaging.ImageFormat.Png);
@@ -86,15 +86,13 @@ namespace web.Handlers
                                         {
                                             using (var page = engine.Process(pix))
                                             {
-                                                string rate = String.Format("{0:P2}", page.GetMeanConfidence());
                                                 //Pega o texto da imagem
                                                 string theTextOfImage = page.GetText();
 
                                                 fileProcessResult.PagesResult.Add(new PageProcessResult()
                                                 {
                                                     Page = i + 1,
-                                                    Success = true,
-                                                    SuccessRate = rate,
+                                                    OCRSuccessRate = page.GetMeanConfidence(),
                                                     Text = pdfText.Replace("\n", " ").Replace("\r", ""),
                                                     OCRText = theTextOfImage.Replace("\n", " ").Replace("\r", "")
                                                 });
@@ -106,8 +104,7 @@ namespace web.Handlers
                                         fileProcessResult.PagesResult.Add(new PageProcessResult()
                                         {
                                             Page = i,
-                                            Success = false,
-                                            SuccessRate = "0%",
+                                            OCRSuccessRate = 0,
                                             Text = pex.Message + pex.StackTrace
                                         });
                                         continue;
@@ -141,16 +138,7 @@ namespace web.Handlers
             return uploadResult;
         }
 
-        private static void AddBytes(Bitmap bmp, byte[] rawBytes)
-        {
-            var rect = new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height);
 
-            var bmpData = bmp.LockBits(rect, ImageLockMode.WriteOnly, bmp.PixelFormat);
-            var pNative = bmpData.Scan0;
-
-            Marshal.Copy(rawBytes, 0, pNative, rawBytes.Length);
-            bmp.UnlockBits(bmpData);
-        }
 
         public async Task<int> CountImagesAsync(IFormFile formFile)
         {

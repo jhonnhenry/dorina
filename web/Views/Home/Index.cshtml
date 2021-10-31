@@ -1,26 +1,43 @@
 ﻿@{
     ViewData["Title"] = "Upload de arquivo";
 }
+<div class="fileProcessPage" style="display:none;">
 
-<form asp-action="UploadFile"
-      enctype="multipart/form-data"
-      onsubmit="AJAXSubmit(this);return false;"
-      method="post">
-    <dl>
-        <dt>
-            <label for="theFile">Escolha o arquivo a ser enviado</label>
-        </dt>
-        <dd>
-            <input type="file" id="theFile" name="theFile" multiple />
-        </dd>
-    </dl>
-    <input class="btn btn-primary" type="submit" value="Enviar" />
+    <div class="fileuploadcontainer">
+        <form id="uploadForm" name="uploadForm"
+              onsubmit="AJAXSubmit(this);return false;"
+              action="/Home/UploadFile"
+              enctype="multipart/form-data"
+              method="post">
+            <dl>
+                <dt>
+                    <label for="theFile">Escolha o arquivo PDF a ser enviado</label>
+                </dt>
+                <dd>
+                    <input type="file" id="theFile" name="theFile" />
+                </dd>
+            </dl>
+            <button id="uploadButton" class="btn btn-primary btn-large" type="submit">Enviar arquivo PDF</button>
+            <div class="linespacer-x"></div>
+        </form>
+    </div>
+    <div class="progress" style="display:none;">
+        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0">0%</div>
+    </div>
+    <div class="row">
+        <div id="statusAlert" class="alert alert-success" role="alert" style="display:none;">
+        </div>
+    </div>
+    
+    <partial name="_FileProcessResultPartial" />
+    <partial name="_PageProcessResultPartial" />
 
+    <div class="linespacer-x"></div>
+    <div id="tips" class="container pt-3" style="display:none">
+        <p>Sobre o detalhamento das páginas do seu documento:</p>
+        <p><small><strong>*Caso a taxa de extração do texto da página seja muito baixa significa que existem muitas imagens nessa página deste documento, verifique se as imagens são realmente necessárias e se todas elas possuem legendas descritivas para garantir acessibildiade.</strong></small></p>
+        <p><small><strong>**Caso tenho sido necessário utilizar OCR para extrair seu texto o documento não será acessível para os aplicativos de leitura de deficientes visuais, por favor tente reestruturar esse documento de outra forma antes de usa-lo em qualquer sistema.</strong></small></p>
+        <p><small><strong>***Tente sempre inserir nos sistemas um documento do tipo PDF/A para garantir a longevidade do seu documento eletrônico.</strong></small></p>
 
-    <br />
-    <br />
-    <br />
-    <br />
-
-    <pre id="json"></pre>
-</form>
+    </div>
+</div>

@@ -1,5 +1,6 @@
-﻿/// <binding AfterBuild='default' />
+/// <binding ProjectOpened='default' />
 const gulp = require("gulp");
+const watch = require('gulp-watch');
 const concat = require('gulp-concat');
 const gulpSass = require('gulp-sass');
 const nodeSass = require('node-sass');
@@ -47,6 +48,12 @@ gulp.task('min:js', function () {
         .pipe(gulp.dest(`wwwroot/js/`));
 });
 
+gulp.task('watch', function () {
+    gulp.watch('css/*.scss', gulp.series(["min:css"]));
+    gulp.watch('scripts/*.js', gulp.series(["min:js"]));
+});
+
 gulp.task("bundle", gulp.parallel(["min:css", "min:js"]));
 
-gulp.task("default", gulp.series(["clean:tmp", "bundle"]));
+gulp.task("default", gulp.series(["clean:tmp", "bundle", 'watch']));
+

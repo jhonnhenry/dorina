@@ -1,0 +1,53 @@
+﻿
+<div id="fileProcessResultContainer" class="fileProcessResultContainer" style="display:none;">
+
+</div>
+<div class="linespacer-x"></div>
+
+<script id="fileProcessResultTemplate" type="text/x-handlebars-template">
+
+    <h3 style="text-align: center;">Informações do Documento</h3>
+    <div class="container pt-4">
+        <div class="row">
+            <div class="col-8">
+                <h6 class="float-right">Média de sucesso na extração do texto:</h6>
+            </div>
+            <div class="col-4">
+                {{ ocrSuccessAverageRate }}%
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-8">
+                <h6 class="float-right">Média da diferença entre leituras:</h6>
+            </div>
+            <div class="col-4">
+                {{averageDiffPercent}}%
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-8">
+                <h6 class="float-right">Imagens encontradas no documento:</h6>
+            </div>
+            <div class="col-4">
+                {{imagesFound}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-8">
+                <h6 class="float-right">Total de páginas no documento:</h6>
+            </div>
+            <div class="col-4">
+                {{totalPages}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-8">
+                <h6 class="float-right">Resultado final da análise:</h6>
+            </div>
+            <div class="col-4 {{averageDiffPercent / totalPages}}">
+                {{finalResult}}
+            </div>
+        </div>
+    </div>
+
+</script>

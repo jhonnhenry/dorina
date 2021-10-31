@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="img/acessibilidade.png" />
     <title>@ViewData["Title"] - Dorina PDF</title>
     <partial name="_allStylesPartial" />
 </head>
@@ -19,14 +20,7 @@
             @RenderBody()
         </main>
     </div>
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2021 - Projeto Dorina PDF
-        </div>
-    </footer>
-    <div class="modalload">
-        <div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-    </div>
+    <partial name="_FooterPartial" />
     <partial name="_allScriptsPartial" />
     @await RenderSectionAsync("Scripts", required: false)
 </body>
