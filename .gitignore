@@ -9,7 +9,6 @@
 Config/
 bin/
 obj/
-lib/
 properties/PublishProfiles/*
 TempFileFolder/
 TempImagesFolder/
