@@ -22,7 +22,7 @@ namespace web.Database.DatabaseModels
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime CreateDate { get; set; }
 
-        public string Hash { get; set; }
+        public string Filename { get; set; }
         public decimal Progress { get; set; }
         public string Result { get; set; }
     }

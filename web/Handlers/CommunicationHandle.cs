@@ -9,22 +9,17 @@ namespace web.Handlers
 {
     public static class CommunicationHandle
     {
-        public static CommunicationModel Send(string title, 
-            string message, 
-            string messageType = "notice",
-            string messageIcon = "far fa-envelope", object model = null)
-        {
+        public static CommunicationModel Send(
+            string title, 
+            string message,
+            MessageType messageType = null,
+            MessageIcon messageIcon = null,
+            object model = null) {
+            var communicationModel = new MessageModel(title, message, messageType, MessageIcon.envelope);
             return new CommunicationModel()
             {
                 Model = model,
-                Message = new MessageModel()
-                {
-                    title = title,
-                    text = message,
-                    messageType = messageType,
-                    messageIcon = messageIcon,
-                }
-
+                Message = communicationModel
             };
         }
     }

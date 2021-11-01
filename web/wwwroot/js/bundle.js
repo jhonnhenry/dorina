@@ -8,7 +8,7 @@ PNotify.defaults.mode = "light";
 PNotify.defaults.labels = { close: 'fechar', stick: 'Fixar', unstick: 'Soltar' };
 PNotify.defaultStack.close();
 
-function showClientMessage(title, text, icon = 'far fa-envelope', type = 'notice') {
+function showClientMessage(title, text, type = 'notice', icon = 'fas fa-envelope',) {
     showMessage({
         title: title,
         text: text,
@@ -18,34 +18,48 @@ function showClientMessage(title, text, icon = 'far fa-envelope', type = 'notice
 }
 
 function showMessage(message) {
+    if (typeof window.maxOpenWait === 'undefined') {
+        window.maxOpenWait = new PNotify.Stack({
+            dir1: 'down',
+            dir2: 'left',
+            firstpos1: 25,
+            firstpos2: 25,
+            modal: false,
+            /*
+            maxOpen: 3,
+            maxStrategy: 'wait',
+            */
+            maxOpen: Infinity
+        });
+    }
     switch (message.messageType) {
         case 'notice':
             PNotify.notice({
                 title: message.title,
                 text: message.text,
                 icon: message.messageIcon,
-                stack: window.maxOpenClose
+                stack: window.maxOpenWait
             }); break;
         case 'info':
             PNotify.info({
                 title: message.title,
                 text: message.text,
                 icon: message.messageIcon,
-                stack: window.maxOpenClose
+                stack: window.maxOpenWait
             }); break;
         case 'success':
             PNotify.success({
                 title: message.title,
                 text: message.text,
                 icon: message.messageIcon,
-                stack: window.maxOpenClose
+                stack: window.maxOpenWait
             }); break;
         case 'error':
             PNotify.error({
                 title: message.title,
                 text: message.text,
                 icon: message.messageIcon,
-                stack: window.maxOpenClose
+                stack: window.maxOpenWait
             }); break;
         default:
     }
@@ -53,19 +67,28 @@ function showMessage(message) {
 }
 "use strict";
 
-var connection = new signalR.HubConnectionBuilder().withUrl("/fileprocess").build();
+const connection = new signalR.HubConnectionBuilder()
+    .withUrl("/fileprocess")
+    .configureLogging(signalR.LogLevel.Information)
+    .build();
 
-connection.start().then(function () {
-    loading(false);
-    $('.fileProcessPage').fadeIn();
-}).catch(function (err) {
-    PNotify.error({
-        title: 'A não!',
-        text: 'Não foi possível se comunicar com nosso servidor! Tente verificar sua conexão com a internet.',
-        hide: false
+async function startConnection() {
+    await connection.start().then(function () {
+        loading(false);
+        $('.fileProcessPage').fadeIn();
+        console.log("SignalR Connected.");
+    }).catch(function (err) {
+        showClientMessage('A não!','Não foi possível se comunicar com nosso servidor! Tente verificar sua conexão com a internet.','error'        );
+        setTimeout(function () { startConnection(); }, 6000);
+        return console.error(err.toString());
     });
-    return console.error(err.toString());
+};
+
+connection.onclose(async () => {
+    loading(true);
+    await startConnection();
 });
+
 
 connection.on("ReceiveMessage", function (comunication) {
     showMessage(comunication.message);
@@ -94,6 +117,11 @@ connection.on("WriteFileResult", function (fileProcessResult) {
     writeFileResult(fileProcessResult);
 });
 
+/******************/
+/******************/
+startConnection();
+/******************/
+/******************/
 
 function isProcessInProgress(filename) {
     return connection.invoke("IsProcessInProgress", filename);
@@ -107,13 +135,11 @@ function finalizeProcess(filename) {
 }
 
 function sendMessageToServer(message, parameter) {
+    //console.log(message);
+    //console.log(parameter);
     connection.invoke("SendMessage", message, parameter)
         .catch(function (err) {
-            PNotify.error({
-                title: 'A não!',
-                text: 'Algum erro não esperado ocorreu ao se comunicar com nosso servidor! Tente verificar sua conexão com a internet.',
-                hide: false
-            });
+            showClientMessage('A não!', 'Algum erro não esperado ocorreu ao se comunicar com nosso servidor! Tente verificar sua conexão com a internet.', 'error');
             return console.error(err.toString());
         });
     return true;
@@ -196,11 +222,6 @@ function toggleButton(btn, enable) {
 }
 function AJAXSubmit(oFormElement) {
 
-    if ($('#theFile').val() == '') {
-        showClientMessage("Atenção", "Você precisa informar um arquivo.");
-        return false;
-    }
-
     var fullPath = $('#theFile').val();
     var startIndex = (fullPath.indexOf('\\') >= 0 ? fullPath.lastIndexOf('\\') : fullPath.lastIndexOf('/'));
     var filename = fullPath.substring(startIndex);
@@ -263,13 +284,6 @@ function AJAXSubmit(oFormElement) {
         processStatus(this.owner);
     }
 
-    function ajaxSuccess() {
-        loading(false);
-        if (JSON.parse(this.responseText).hash) {
-            sendMessageToServer('startFileProcess', JSON.parse(this.responseText).hash);
-        }
-    }
-
     function submitData(oData) {
         /* the AJAX request... */
         var oAjaxReq = new XMLHttpRequest();
@@ -294,6 +308,17 @@ function AJAXSubmit(oFormElement) {
                 oAjaxReq.setRequestHeader("Content-Type", oData.contentType);
                 oAjaxReq.send(oData.segments.join(oData.technique === 2 ? "\r\n" : "&"));
             }
+        }
+    }
+
+    function ajaxSuccess() {
+        loading(false);
+        var response = JSON.parse(this.responseText);
+        if (response.fileName) {
+            sendMessageToServer('startFileProcess', response.fileName);
+        } else {
+            showMessage(response.message)
+            
         }
     }
 
@@ -360,8 +385,37 @@ function AJAXSubmit(oFormElement) {
         }
     });
 }
+
+function validateFile(oFileElement) {
+
+    if (!oFileElement.files[0]) {
+        showClientMessage("Atenção", "Você precisa informar um arquivo.");
+        return false;
+    }
+
+    validateExtension(oFileElement.files[0]);
+    validateSize(oFileElement.files[0]);
+}
+
+
+function validateExtension(file) {
+
+    if (file.type !== "application/pdf") {
+        showClientMessage("Atenção", "O tipo de arquivo precisa ser .PDF");
+        return false;
+    }
+    return true;
+}
+
+function validateSize(file) {
+    if (file.size / 1024 / 1024 > 5) {
+        showClientMessage("Atenção", "O tamanho do arquivo não pode exceder 5MB");
+        return false;
+    }
+}
+
 function writeFileResult(fileProcessResult) {
-    console.log(fileProcessResult);
+    //console.log(fileProcessResult);
 
     var source = document.getElementById('fileProcessResultTemplate').innerHTML;
     const fileResultTemplate = Handlebars.compile(source);

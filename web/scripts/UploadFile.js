@@ -1,10 +1,5 @@
 ﻿function AJAXSubmit(oFormElement) {
 
-    if ($('#theFile').val() == '') {
-        showClientMessage("Atenção", "Você precisa informar um arquivo.");
-        return false;
-    }
-
     var fullPath = $('#theFile').val();
     var startIndex = (fullPath.indexOf('\\') >= 0 ? fullPath.lastIndexOf('\\') : fullPath.lastIndexOf('/'));
     var filename = fullPath.substring(startIndex);
@@ -67,13 +62,6 @@
         processStatus(this.owner);
     }
 
-    function ajaxSuccess() {
-        loading(false);
-        if (JSON.parse(this.responseText).hash) {
-            sendMessageToServer('startFileProcess', JSON.parse(this.responseText).hash);
-        }
-    }
-
     function submitData(oData) {
         /* the AJAX request... */
         var oAjaxReq = new XMLHttpRequest();
@@ -98,6 +86,17 @@
                 oAjaxReq.setRequestHeader("Content-Type", oData.contentType);
                 oAjaxReq.send(oData.segments.join(oData.technique === 2 ? "\r\n" : "&"));
             }
+        }
+    }
+
+    function ajaxSuccess() {
+        loading(false);
+        var response = JSON.parse(this.responseText);
+        if (response.fileName) {
+            sendMessageToServer('startFileProcess', response.fileName);
+        } else {
+            showMessage(response.message)
+            
         }
     }
 

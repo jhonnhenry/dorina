@@ -17,6 +17,7 @@ using Tesseract;
 using web.Models;
 using System.Drawing;
 using System.Drawing.Imaging;
+using Microsoft.Extensions.Configuration;
 
 namespace web.Handlers.SignalRHubs
 {
@@ -25,13 +26,16 @@ namespace web.Handlers.SignalRHubs
         private readonly EfDbContext _context;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly IConfiguration _config;
 
         public FileProcessHub(EfDbContext context,
             SignInManager<IdentityUser> signInManager,
-                   UserManager<IdentityUser> userManager)
+                   UserManager<IdentityUser> userManager,
+                   IConfiguration config)
         {
             _context = context;
             _signInManager = signInManager;
+            _config = config;
             _userManager = userManager;
         }
         public async Task SendMessage(string message, string parameter)
@@ -47,23 +51,23 @@ namespace web.Handlers.SignalRHubs
                         break;
                 }
             }
-            catch (ApplicationException aex)
+            catch (Exception ex)
             {
-                await Clients.Caller.SendAsync("ReceiveMessage", CommunicationHandle.Send("Opa!", aex.Message, "error"));
+                await Clients.Caller.SendAsync("ReceiveMessage", CommunicationHandle.Send("Erro!", ex.Message, MessageType.error));
             }
         }
 
         public decimal? IsProcessInProgress(string filename)
         {
             filename = filename.ToOnlyText();
-            var fileReceived = _context.ReceivedFiles.FirstOrDefault(f => f.Hash.Equals(filename));
+            var fileReceived = _context.ReceivedFiles.FirstOrDefault(f => f.Filename.Equals(filename));
             return fileReceived?.Progress;
         }
 
         public bool FinalizeProcess(string filename)
         {
             filename = filename.ToOnlyText();
-            var exists = _context.ReceivedFiles.Where(f => f.Hash.Equals(filename));
+            var exists = _context.ReceivedFiles.Where(f => f.Filename.Equals(filename));
             if (exists.Count() > 0)
             {
                 _context.ReceivedFiles.RemoveRange(exists);
@@ -79,11 +83,13 @@ namespace web.Handlers.SignalRHubs
                         .SendAsync("ReceiveMessage", CommunicationHandle
                         .Send("Ok", "Iniciamos o processamento do seu arquivo! Acompanhe o progresso!"));
 
-            string fileFolder = @"Files";
-            var fileFolderPath = Path.GetFullPath(fileFolder);
+            string tempFileFolder = _config.GetValue<string>("App:TempFileFolder");
+            var tempFileFolderPath = Path.GetFullPath(tempFileFolder);
+            string tempImagesFolder = _config.GetValue<string>("App:TempImagesFolder"); ;
+            var tempImagesFolderPath = Path.GetFullPath(tempImagesFolder);
 
             var _docLib = DocLib.Instance;
-            using (FileStream fsSource = new FileStream($"{fileFolderPath}/{filename.ToOnlyText()}", FileMode.Open, FileAccess.Read))
+            using (FileStream fsSource = new FileStream($"{tempFileFolderPath}/{filename.ToOnlyText()}", FileMode.Open, FileAccess.Read))
             {
                 byte[] bytes = new byte[fsSource.Length];
                 int numBytesToRead = (int)fsSource.Length;
@@ -100,6 +106,7 @@ namespace web.Handlers.SignalRHubs
                 numBytesToRead = bytes.Length;
 
                 var docReader = _docLib.GetDocReader(bytes, new PageDimensions(1080, 1920));
+
                 var pdfVersion = docReader.GetPdfVersion();
                 int totalPages = docReader.GetPageCount();
 
@@ -107,18 +114,7 @@ namespace web.Handlers.SignalRHubs
 
                 using (var engine = new TesseractEngine(tesseractdatafilePatch, "por", EngineMode.Default))
                 {
-                    string pageImagesFolder = @"PageImages";
-                    var pageImagesPath = Path.GetFullPath(pageImagesFolder);
-
-                    if (File.Exists(pageImagesPath))
-                        Directory.Delete(pageImagesPath);
-
-                    Directory.CreateDirectory(pageImagesPath);
-
-                    if (!System.IO.File.Exists(fileFolderPath))
-                        Directory.CreateDirectory(fileFolderPath);
-
-                    var fileFullPath = $"{fileFolderPath}/{filename.ToOnlyText()}";
+                    var fileFullPath = $"{tempFileFolderPath}/{filename.ToOnlyText()}";
 
                     var fileProcessResult = new FileProcessResult()
                     {
@@ -146,7 +142,7 @@ namespace web.Handlers.SignalRHubs
                             var bmp = new Bitmap(width, height, PixelFormat.Format32bppArgb);
                             BitmapHandle.AddBytes(bmp, rawBytes);
 
-                            string pageImagefilename = $"{pageImagesPath}\\{DateTime.Now.Ticks.ToString()}.png";
+                            string pageImagefilename = $"{tempImagesFolderPath}\\{DateTime.Now.Ticks.ToString()}.png";
                             bmp.Save(pageImagefilename, System.Drawing.Imaging.ImageFormat.Png);
 
                             using (var pix = Pix.LoadFromFile(pageImagefilename))
@@ -206,6 +202,17 @@ namespace web.Handlers.SignalRHubs
                             .SendAsync("ReceiveMessage", CommunicationHandle
                             .Send("Sucesso", "O processamento do seu arquivo foi finalizado!"));
             await Clients.User(Context.UserIdentifier).SendAsync("FinalizeProcess");
+
+
+            //For not create garbage
+            if (File.Exists(tempImagesFolderPath))
+                Directory.Delete(tempImagesFolderPath);
+
+            if (!File.Exists(tempFileFolderPath))
+                Directory.CreateDirectory(tempFileFolderPath);
+
+            Directory.CreateDirectory(tempImagesFolderPath);
+            Directory.CreateDirectory(tempFileFolderPath);
         }
 
     }

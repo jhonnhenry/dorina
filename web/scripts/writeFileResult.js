@@ -1,5 +1,5 @@
 ﻿function writeFileResult(fileProcessResult) {
-    console.log(fileProcessResult);
+    //console.log(fileProcessResult);
 
     var source = document.getElementById('fileProcessResultTemplate').innerHTML;
     const fileResultTemplate = Handlebars.compile(source);

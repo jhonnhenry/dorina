@@ -1,18 +1,27 @@
 ﻿"use strict";
 
-var connection = new signalR.HubConnectionBuilder().withUrl("/fileprocess").build();
+const connection = new signalR.HubConnectionBuilder()
+    .withUrl("/fileprocess")
+    .configureLogging(signalR.LogLevel.Information)
+    .build();
 
-connection.start().then(function () {
-    loading(false);
-    $('.fileProcessPage').fadeIn();
-}).catch(function (err) {
-    PNotify.error({
-        title: 'A não!',
-        text: 'Não foi possível se comunicar com nosso servidor! Tente verificar sua conexão com a internet.',
-        hide: false
+async function startConnection() {
+    await connection.start().then(function () {
+        loading(false);
+        $('.fileProcessPage').fadeIn();
+        console.log("SignalR Connected.");
+    }).catch(function (err) {
+        showClientMessage('A não!','Não foi possível se comunicar com nosso servidor! Tente verificar sua conexão com a internet.','error'        );
+        setTimeout(function () { startConnection(); }, 6000);
+        return console.error(err.toString());
     });
-    return console.error(err.toString());
+};
+
+connection.onclose(async () => {
+    loading(true);
+    await startConnection();
 });
+
 
 connection.on("ReceiveMessage", function (comunication) {
     showMessage(comunication.message);
@@ -41,6 +50,11 @@ connection.on("WriteFileResult", function (fileProcessResult) {
     writeFileResult(fileProcessResult);
 });
 
+/******************/
+/******************/
+startConnection();
+/******************/
+/******************/
 
 function isProcessInProgress(filename) {
     return connection.invoke("IsProcessInProgress", filename);
@@ -54,13 +68,11 @@ function finalizeProcess(filename) {
 }
 
 function sendMessageToServer(message, parameter) {
+    //console.log(message);
+    //console.log(parameter);
     connection.invoke("SendMessage", message, parameter)
         .catch(function (err) {
-            PNotify.error({
-                title: 'A não!',
-                text: 'Algum erro não esperado ocorreu ao se comunicar com nosso servidor! Tente verificar sua conexão com a internet.',
-                hide: false
-            });
+            showClientMessage('A não!', 'Algum erro não esperado ocorreu ao se comunicar com nosso servidor! Tente verificar sua conexão com a internet.', 'error');
             return console.error(err.toString());
         });
     return true;

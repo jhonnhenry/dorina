@@ -10,5 +10,6 @@ Config/
 bin/
 obj/
 lib/
-properties/
-PageImages/
+properties/PublishProfiles/*
+TempFileFolder/
+TempImagesFolder/
