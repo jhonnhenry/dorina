@@ -36,24 +36,21 @@ namespace web.Controllers
 
         public async Task<IActionResult> IndexAsync()
         {
-            var cookie = ControllerContext.HttpContext.Request.Cookies.FirstOrDefault(f => f.Key.Contains("Antiforgery"));
-            if (cookie.Value != null)
+            if (!User.Identity.IsAuthenticated)
             {
-                string antiforgeryCookie = cookie.Value.ToOnlyText();
-
-                antiforgeryCookie = antiforgeryCookie.ToOnlyText();
-                var user = await _userManager.FindByNameAsync(antiforgeryCookie);
+                var randomUsername = Guid.NewGuid().ToString().ToOnlyText();
+                var user = await _userManager.FindByNameAsync(randomUsername);
                 if (user == null)
                 {
                     user = new IdentityUser()
                     {
-                        UserName = antiforgeryCookie
+                        UserName = randomUsername,
+                        Email = $"{randomUsername}@dorina.org"
                     };
-                    var asd = await _userManager.CreateAsync(user);
+                    var result = await _userManager.CreateAsync(user);
                 }
                 await _signInManager.SignInAsync(user, true);
             }
-
             return View();
         }
 
@@ -74,24 +71,20 @@ namespace web.Controllers
                 var sendedFile = theFile[0];
                 var normalizedFilename = sendedFile.FileName.ToOnlyText();
 
+                var exists = _context.ReceivedFiles.FirstOrDefault(f =>
+                    f.Username.Equals(User.Identity.Name));
+                if (exists != null)
+                {
+                    throw new Exception("Você só pode pode processar um arquivo por vez.");
+                }
+
                 if (!System.IO.File.Exists(fileFolderPath))
                     Directory.CreateDirectory(fileFolderPath);
                 using (var stream = System.IO.File.Create($"{fileFolderPath}/{sendedFile.FileName.ToOnlyText()}"))
                 {
                     await sendedFile.CopyToAsync(stream);
-
-                    var exists = _context.ReceivedFiles.FirstOrDefault(f => f.Filename.Equals(sendedFile.FileName));
-                    if (exists != null)
-                    {
-                        _context.ReceivedFiles.Remove(exists);
-                    }
-                    _context.ReceivedFiles.Add(new Database.DatabaseModels.ReceivedFile()
-                    {
-                        Filename = sendedFile.FileName,
-                        Progress = 0.1m
-                    });
-                    _context.SaveChanges();
                 }
+
                 return Json(new { FileName = normalizedFilename });
             }
             catch (Exception ex)

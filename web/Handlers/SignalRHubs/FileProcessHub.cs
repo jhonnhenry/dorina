@@ -58,11 +58,12 @@ namespace web.Handlers.SignalRHubs
             }
         }
 
-        public decimal? IsProcessInProgress(string filename)
+        public bool IsProcessInProgress(string filename)
         {
             filename = filename.ToOnlyText();
-            var fileReceived = _context.ReceivedFiles.FirstOrDefault(f => f.Filename.Equals(filename));
-            return fileReceived?.Progress;
+            return _context.ReceivedFiles.Any(f =>
+            f.Username.Equals(Context.User.Identity.Name)
+            && f.Filename.Equals(filename));
         }
 
         public bool FinalizeProcess(string filename)
@@ -89,6 +90,20 @@ namespace web.Handlers.SignalRHubs
 
             var tempImagesFolderPath = Path.GetFullPath(_tempImagesFolder);
             var fileFullPath = $"{tempFileFolderPath}/{filename.ToOnlyText()}";
+
+            if(File.Exists(fileFullPath))
+            {
+                _context.ReceivedFiles.Add(new Database.DatabaseModels.ReceivedFile()
+                {
+                    Filename = filename,
+                    Username = Context.User.Identity.Name,
+                });
+                _context.SaveChanges();
+            }
+            else
+            {
+                throw new Exception($"Houve um erro ao processar o arquivo.");
+            }
 
             byte[] bytesOfFile = FileStreamHandle.GetAsByteArray(fileFullPath);
 
@@ -191,6 +206,15 @@ namespace web.Handlers.SignalRHubs
                             .SendAsync("ReceiveMessage", CommunicationHandle
                             .Send("Sucesso", "O processamento do seu arquivo foi finalizado!"));
             await Clients.User(Context.UserIdentifier).SendAsync("FinalizeProcess");
+
+            var exists = _context.ReceivedFiles.FirstOrDefault(f =>
+                    f.Filename.Equals(filename)
+                    && f.Username.Equals(Context.User.Identity.Name));
+            if (exists != null)
+            {
+                _context.ReceivedFiles.Remove(exists);
+                _context.SaveChanges();
+            }
 
             //Free resources
             tesseractEngine.Dispose();

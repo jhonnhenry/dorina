@@ -20,7 +20,7 @@ namespace web.Database.DatabaseModels
         public DateTime CreateDate { get; set; }
 
         public string Filename { get; set; }
-        public decimal Progress { get; set; }
         public string Result { get; set; }
+        public string Username { get; set; }
     }
 }
