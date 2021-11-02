@@ -37,6 +37,7 @@ namespace web.Api.Handlers
 
                 var pdfVersion = docReader.GetPdfVersion();
                 int totalPages = docReader.GetPageCount();
+                fileProcessResult.TotalPages = totalPages;
 
                 var tesseractEngine = TesseractHandle.GetEngine();
 
@@ -89,6 +90,8 @@ namespace web.Api.Handlers
                                 fileProcessResult.PagesResult.Add(pageProcessResult);
                             }
                         }
+                        if (File.Exists(pageImagefilename))
+                            File.Delete(pageImagefilename);
 
                         fileProcessResult = FileResultHandle.CalcResult(fileProcessResult);
                     }
@@ -107,16 +110,16 @@ namespace web.Api.Handlers
                 docLib.Dispose();
                 tesseractEngine.Dispose();
 
-                if (!File.Exists(tempImagesFolderPath))
-                    Directory.Delete(tempImagesFolderPath);
+                return fileProcessResult;
             }
             catch (Exception ex)
             {
-                fileProcessResult.Success = false;
-                fileProcessResult.Message = ex.Message;
+                return new FileProcessResult()
+                {
+                    Success = false,
+                    Message = ex.Message
+                };
             }
-
-            return fileProcessResult;
         }
     }
 }

@@ -26,6 +26,7 @@ namespace web.Handlers.SignalRHubs
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IConfiguration _config;
+        private readonly string _tempImagesFolder;
 
         public FileProcessHub(EfDbContext context,
             SignInManager<IdentityUser> signInManager,
@@ -36,6 +37,7 @@ namespace web.Handlers.SignalRHubs
             _signInManager = signInManager;
             _config = config;
             _userManager = userManager;
+            _tempImagesFolder = _config.GetValue<string>("App:TempImagesFolder");
         }
         public async Task SendMessage(string message, string parameter)
         {
@@ -84,8 +86,8 @@ namespace web.Handlers.SignalRHubs
 
             string tempFileFolder = _config.GetValue<string>("App:TempFileFolder");
             var tempFileFolderPath = Path.GetFullPath(tempFileFolder);
-            string tempImagesFolder = _config.GetValue<string>("App:TempImagesFolder");
-            var tempImagesFolderPath = Path.GetFullPath(tempImagesFolder);
+            
+            var tempImagesFolderPath = Path.GetFullPath(_tempImagesFolder);
             var fileFullPath = $"{tempFileFolderPath}/{filename.ToOnlyText()}";
 
             byte[] bytesOfFile = FileStreamHandle.GetAsByteArray(fileFullPath);

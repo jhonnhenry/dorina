@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,12 @@ namespace web.Api
     [Route("api/[controller]")]
     public class UploadController : ControllerBase
     {
+        private readonly IConfiguration _config;
+
+        public UploadController(IConfiguration config)
+        {
+            _config = config;
+        }
 
         [HttpPost]
         public async Task<IActionResult> SendAsync(List<IFormFile> file)
@@ -35,7 +42,8 @@ namespace web.Api
                     throw new Exception("Você precisa informar um arquivo PDF.");
                 }
 
-                var resultOfProccess = await new ApiHandleFile().GetResultAsync(theFile);
+                string tempImagesFolder = _config.GetValue<string>("App:TempImagesFolder");
+                var resultOfProccess = await new ApiHandleFile().GetResultAsync(theFile, tempImagesFolder);
                 return Ok(resultOfProccess);
             }
             catch (Exception ex)
