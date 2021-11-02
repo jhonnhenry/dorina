@@ -13,6 +13,13 @@
         </h2>
         <div id="collapse{{ page }}" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
             <div class="accordion-body">
+                <div class="images">
+                    <img
+                         alt="Imagem da página"
+                         onclick="imageViewShow(this)"
+                         class="img-fluid img-thumbnail rounded mx-auto d-block image-viewer-modal-content image-viewer-img"
+                         src="data:image/jpeg;base64, {{base64Image}}" />
+                </div>
                 <p><strong>Taxa de sucesso de extração do texto:</strong> <span>{{ ocrSuccessRate }}%</span></p>
                 <p><strong>Total de caracteres lidos sem OCR:</strong> <span>{{ totalCharacters }}</span></p>
                 <p><strong>Total de caracteres lidos com OCR:</strong> <span>{{ totalCharactersFromOCR }}</span></p>

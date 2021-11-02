@@ -10,5 +10,6 @@
         public float OCRSuccessRate { get; set; }
         public float DiffPercent { get; set; }
         public string FinalResult { get; set; }
+        public string Base64Image { get; internal set; }
     }
 }

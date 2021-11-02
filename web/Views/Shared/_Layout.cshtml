@@ -20,6 +20,10 @@
             @RenderBody()
         </main>
     </div>
+    <div class="image-viewer-container" onclick="$(this).hide()">
+        <span class="close">&times;</span>
+        <img class="image-viewer-modal-content image-viewer-full-image">
+    </div>
     <partial name="_FooterPartial" />
     <partial name="_allScriptsPartial" />
     @await RenderSectionAsync("Scripts", required: false)

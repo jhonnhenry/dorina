@@ -66,7 +66,7 @@ namespace web.Controllers
                 string tempFileFolder = _config.GetValue<string>("App:TempFileFolder");
                 var fileFolderPath = Path.GetFullPath(tempFileFolder);
 
-                if (theFile.Count == 0)
+                if (theFile == null || theFile.Count == 0)
                 {
                     throw new Exception("Você precisa informar um arquivo PDF");
                 }

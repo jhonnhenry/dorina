@@ -188,6 +188,11 @@ function fileProcessResult(jsonResult) {
     document.getElementById('processResultContainer').innerHTML = html;
     $('#processResultContainer').fadeIn();
 }
+function imageViewShow(e) {
+    $(".image-viewer-full-image").attr("src", $(e).attr("src"));
+    $('.image-viewer-container').show();
+}
+
 
 function loading(status) {
     if (status)
@@ -315,10 +320,10 @@ function AJAXSubmit(oFormElement) {
         loading(false);
         var response = JSON.parse(this.responseText);
         if (response.fileName) {
+            $('.spinner-border').fadeIn();
             sendMessageToServer('startFileProcess', response.fileName);
         } else {
-            showMessage(response.message)
-            
+            showMessage(response.message);
         }
     }
 
@@ -434,4 +439,5 @@ function writePageResult(pageProcessResult) {
     htmlObject.innerHTML = html;
     document.getElementById('accordionExample').append(htmlObject);
     $('#accordionExample').fadeIn();
+    $('.spinner-border').fadeOut();
 }

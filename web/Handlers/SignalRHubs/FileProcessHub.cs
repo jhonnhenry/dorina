@@ -86,7 +86,7 @@ namespace web.Handlers.SignalRHubs
 
             string tempFileFolder = _config.GetValue<string>("App:TempFileFolder");
             var tempFileFolderPath = Path.GetFullPath(tempFileFolder);
-            
+
             var tempImagesFolderPath = Path.GetFullPath(_tempImagesFolder);
             var fileFullPath = $"{tempFileFolderPath}/{filename.ToOnlyText()}";
 
@@ -97,7 +97,7 @@ namespace web.Handlers.SignalRHubs
 
             // var pdfVersion = docReader.GetPdfVersion();
             int totalPages = docReader.GetPageCount();
-            
+
             var tesseractEngine = TesseractHandle.GetEngine();
 
             var fileProcessResult = new FileProcessResult()
@@ -122,14 +122,17 @@ namespace web.Handlers.SignalRHubs
                     //Make a image from page
                     var width = pageReader.GetPageWidth();
                     var height = pageReader.GetPageHeight();
-                    var rawBytes = pageReader.GetImage();
+                    var rawImageBytes = pageReader.GetImage(RenderFlags.OptimizeTextForLcd);
+
                     pageReader.Dispose();
 
                     var bmp = new Bitmap(width, height, PixelFormat.Format32bppArgb);
-                    BitmapHandle.AddBytes(bmp, rawBytes);
+                    BitmapHandle.AddBytes(bmp, rawImageBytes);
 
-                    string pageImagefilename = $"{tempImagesFolderPath}\\{DateTime.Now.Ticks.ToString()}.png";
+                    string pageImagefilename = $"{tempImagesFolderPath}\\{DateTime.Now.Ticks.ToString()}.jpeg";
                     bmp.Save(pageImagefilename, System.Drawing.Imaging.ImageFormat.Png);
+
+                    var imageBase64 = Convert.ToBase64String(File.ReadAllBytes(pageImagefilename));
 
                     using (var pix = Pix.LoadFromFile(pageImagefilename))
                     {
@@ -151,7 +154,8 @@ namespace web.Handlers.SignalRHubs
                                 Text = pdfText.Replace("\n", " ").Replace("\r", ""),
                                 OCRText = theTextOfImage.Replace("\n", " ").Replace("\r", ""),
                                 DiffPercent = diffPercent,
-                                FinalResult = PageResultHandle.CalcResult(diffPercent)
+                                FinalResult = PageResultHandle.CalcResult(diffPercent),
+                                Base64Image = imageBase64
                             };
                             fileProcessResult.PagesResult.Add(pageProcessResult);
 
@@ -191,7 +195,7 @@ namespace web.Handlers.SignalRHubs
             //Free resources
             tesseractEngine.Dispose();
             docReader.Dispose();
-            
+
             //For not create garbage
             if (File.Exists(tempImagesFolderPath))
                 Directory.Delete(tempImagesFolderPath);

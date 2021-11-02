@@ -28,7 +28,7 @@ namespace web.Api
         {
             try
             {
-                if (file.Count == 0)
+                if (file == null || file.Count == 0)
                 {
                     throw new Exception("Você precisa informar um arquivo.");
                 }

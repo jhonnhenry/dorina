@@ -93,10 +93,10 @@
         loading(false);
         var response = JSON.parse(this.responseText);
         if (response.fileName) {
+            $('.spinner-border').fadeIn();
             sendMessageToServer('startFileProcess', response.fileName);
         } else {
-            showMessage(response.message)
-            
+            showMessage(response.message);
         }
     }
 
