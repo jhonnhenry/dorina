@@ -1,20 +1,16 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Security.Cryptography;
 using web.Database;
 using web.Handlers;
 using web.Models;
 using System.IO;
 using Domain.Extensions;
 using Microsoft.AspNetCore.Identity;
-using Newtonsoft.Json;
 using Microsoft.Extensions.Configuration;
 
 namespace web.Controllers
@@ -70,7 +66,7 @@ namespace web.Controllers
                 string tempFileFolder = _config.GetValue<string>("App:TempFileFolder");
                 var fileFolderPath = Path.GetFullPath(tempFileFolder);
 
-                if (theFile[0] == null)
+                if (theFile.Count == 0)
                 {
                     throw new Exception("Você precisa informar um arquivo PDF");
                 }

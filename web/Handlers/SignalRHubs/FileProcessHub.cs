@@ -4,7 +4,6 @@ using Domain.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 using web.Database;
@@ -85,116 +84,100 @@ namespace web.Handlers.SignalRHubs
 
             string tempFileFolder = _config.GetValue<string>("App:TempFileFolder");
             var tempFileFolderPath = Path.GetFullPath(tempFileFolder);
-            string tempImagesFolder = _config.GetValue<string>("App:TempImagesFolder"); ;
+            string tempImagesFolder = _config.GetValue<string>("App:TempImagesFolder");
             var tempImagesFolderPath = Path.GetFullPath(tempImagesFolder);
+            var fileFullPath = $"{tempFileFolderPath}/{filename.ToOnlyText()}";
+
+            byte[] bytesOfFile = FileStreamHandle.GetAsByteArray(fileFullPath);
 
             var _docLib = DocLib.Instance;
-            using (FileStream fsSource = new FileStream($"{tempFileFolderPath}/{filename.ToOnlyText()}", FileMode.Open, FileAccess.Read))
+            var docReader = _docLib.GetDocReader(bytesOfFile, new PageDimensions(1080, 1920));
+
+            // var pdfVersion = docReader.GetPdfVersion();
+            int totalPages = docReader.GetPageCount();
+            
+            var tesseractEngine = TesseractHandle.GetEngine();
+
+            var fileProcessResult = new FileProcessResult()
             {
-                byte[] bytes = new byte[fsSource.Length];
-                int numBytesToRead = (int)fsSource.Length;
-                int numBytesRead = 0;
-                while (numBytesToRead > 0)
+                Success = true,
+                ImagesFound = CountImagesHandle.GetTotal(fileFullPath),
+                Message = "Arquivo processado com sucesso",
+                TotalPages = totalPages
+            };
+
+            for (int i = 0; i < totalPages; i++)
+            {
+                try
                 {
-                    int n = fsSource.Read(bytes, numBytesRead, numBytesToRead);
-                    if (n == 0)
-                        break;
+                    var pageReader = docReader.GetPageReader(i);
 
-                    numBytesRead += n;
-                    numBytesToRead -= n;
-                }
-                numBytesToRead = bytes.Length;
+                    //Get the text of page
+                    var pdfText = pageReader.GetText();
+                    if (pdfText.Length == 0)
+                        pdfText = "-";
 
-                var docReader = _docLib.GetDocReader(bytes, new PageDimensions(1080, 1920));
+                    //Make a image from page
+                    var width = pageReader.GetPageWidth();
+                    var height = pageReader.GetPageHeight();
+                    var rawBytes = pageReader.GetImage();
+                    pageReader.Dispose();
 
-                var pdfVersion = docReader.GetPdfVersion();
-                int totalPages = docReader.GetPageCount();
+                    var bmp = new Bitmap(width, height, PixelFormat.Format32bppArgb);
+                    BitmapHandle.AddBytes(bmp, rawBytes);
 
-                var tesseractdatafilePatch = $"{Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)}\\tesseractdatafile";
+                    string pageImagefilename = $"{tempImagesFolderPath}\\{DateTime.Now.Ticks.ToString()}.png";
+                    bmp.Save(pageImagefilename, System.Drawing.Imaging.ImageFormat.Png);
 
-                using (var engine = new TesseractEngine(tesseractdatafilePatch, "por", EngineMode.Default))
-                {
-                    var fileFullPath = $"{tempFileFolderPath}/{filename.ToOnlyText()}";
-
-                    var fileProcessResult = new FileProcessResult()
+                    using (var pix = Pix.LoadFromFile(pageImagefilename))
                     {
-                        Success = true,
-                        ImagesFound = CountImagesHandle.GetTotal(fileFullPath),
-                        Message = "Arquivo processado com sucesso",
-                        TotalPages = totalPages
-                    };
-
-                    for (int i = 0; i < totalPages; i++)
-                    {
-                        try
+                        using (var page = tesseractEngine.Process(pix))
                         {
-                            var pageReader = docReader.GetPageReader(i);
+                            //Get the text of image
+                            string theTextOfImage = page.GetText();
 
-                            //Pega o texto da página
-                            var pdfText = pageReader.GetText();
-                            if (pdfText.Length == 0)
-                                pdfText = "x";
+                            var diff = theTextOfImage.Length - pdfText.Length;
+                            var diffPercent = (int)(((decimal)diff / (decimal)pdfText.Length) * 100);
+                            var OCRSuccessRate = page.GetMeanConfidence();
 
-                            //Transforma a página pra imagem
-                            var width = pageReader.GetPageWidth();
-                            var height = pageReader.GetPageHeight();
-                            var rawBytes = pageReader.GetImage();
-                            var bmp = new Bitmap(width, height, PixelFormat.Format32bppArgb);
-                            BitmapHandle.AddBytes(bmp, rawBytes);
-
-                            string pageImagefilename = $"{tempImagesFolderPath}\\{DateTime.Now.Ticks.ToString()}.png";
-                            bmp.Save(pageImagefilename, System.Drawing.Imaging.ImageFormat.Png);
-
-                            using (var pix = Pix.LoadFromFile(pageImagefilename))
-                            {
-                                using (var page = engine.Process(pix))
-                                {
-                                    //Pega o texto da imagem
-                                    string theTextOfImage = page.GetText();
-
-                                    var diff = theTextOfImage.Length - pdfText.Length;
-                                    var diffPercent = (int)(((decimal)diff / (decimal)pdfText.Length) * 100);
-                                    var OCRSuccessRate = page.GetMeanConfidence();
-                                    var pageProcessResult = new PageProcessResult()
-                                    {
-                                        Page = i + 1,
-                                        TotalCharacters = pdfText.Length,
-                                        TotalCharactersFromOCR = theTextOfImage.Length,
-                                        OCRSuccessRate = OCRSuccessRate * 100,
-                                        Text = pdfText.Replace("\n", " ").Replace("\r", ""),
-                                        OCRText = theTextOfImage.Replace("\n", " ").Replace("\r", ""),
-                                        DiffPercent = diffPercent,
-                                        FinalResult = PageResultHandle.CalcResult(diffPercent)
-                                    };
-                                    fileProcessResult.PagesResult.Add(pageProcessResult);
-
-                                    int percent = (int)((((decimal)i + 1.0m) / (decimal)totalPages) * 100);
-
-                                    await Clients.User(Context.UserIdentifier).SendAsync("UpdateStatus",
-                                        percent,
-                                        $"Terminamos de processar a página {i + 1}");
-
-                                    await Clients.User(Context.UserIdentifier).SendAsync("WritePageResult",
-                                        pageProcessResult);
-                                }
-                            }
-                        }
-                        catch (Exception pex)
-                        {
-                            fileProcessResult.PagesResult.Add(new PageProcessResult()
+                            var pageProcessResult = new PageProcessResult()
                             {
                                 Page = i + 1,
-                                OCRSuccessRate = 0,
-                                Text = pex.Message + pex.StackTrace
-                            });
-                            continue;
+                                TotalCharacters = pdfText.Length,
+                                TotalCharactersFromOCR = theTextOfImage.Length,
+                                OCRSuccessRate = OCRSuccessRate * 100,
+                                Text = pdfText.Replace("\n", " ").Replace("\r", ""),
+                                OCRText = theTextOfImage.Replace("\n", " ").Replace("\r", ""),
+                                DiffPercent = diffPercent,
+                                FinalResult = PageResultHandle.CalcResult(diffPercent)
+                            };
+                            fileProcessResult.PagesResult.Add(pageProcessResult);
+
+                            int percent = (int)((((decimal)i + 1.0m) / (decimal)totalPages) * 100);
+
+                            await Clients.User(Context.UserIdentifier).SendAsync("UpdateStatus",
+                                percent,
+                                $"Terminamos de processar a página {i + 1}");
+
+                            await Clients.User(Context.UserIdentifier).SendAsync("WritePageResult",
+                                pageProcessResult);
                         }
                     }
-
-                    fileProcessResult = FileResultHandle.CalcResult(fileProcessResult);
-                    await Clients.User(Context.UserIdentifier).SendAsync("WriteFileResult", fileProcessResult);
+                }
+                catch
+                {
+                    fileProcessResult.PagesResult.Add(new PageProcessResult()
+                    {
+                        Page = i + 1,
+                        OCRSuccessRate = 0,
+                        Text = "Ocorreu um erro não esperado e não conseguimos ler esta página."
+                    });
+                    continue;
                 }
             }
+
+            fileProcessResult = FileResultHandle.CalcResult(fileProcessResult);
+            await Clients.User(Context.UserIdentifier).SendAsync("WriteFileResult", fileProcessResult);
 
             await Clients.User(Context.UserIdentifier).SendAsync("UpdateStatus", 0, "O processamento do seu arquivo foi finalizado!");
             FinalizeProcess(filename);
@@ -203,7 +186,10 @@ namespace web.Handlers.SignalRHubs
                             .Send("Sucesso", "O processamento do seu arquivo foi finalizado!"));
             await Clients.User(Context.UserIdentifier).SendAsync("FinalizeProcess");
 
-
+            //Free resources
+            tesseractEngine.Dispose();
+            docReader.Dispose();
+            
             //For not create garbage
             if (File.Exists(tempImagesFolderPath))
                 Directory.Delete(tempImagesFolderPath);

@@ -1,15 +1,21 @@
-﻿using org.pdfclown.objects;
+﻿using org.pdfclown.bytes;
+using org.pdfclown.objects;
 
-using pdfclown = org.pdfclown.files;
 
 namespace web.Handlers
 {
-    public static class CountImagesHandle
+    public static class PdfClownHandle
     {
-        public static int GetTotal(string filePath)
+        public static int CountImages(string filePath)
+        {
+            return CountImages(FileStreamHandle.GetAsByteArray(filePath));
+        }
+
+        public static int CountImages(byte[] fileBytes)
         {
             int count = 0;
-            using (pdfclown::File file = new pdfclown::File(filePath))
+            IInputStream iInputStream = new org.pdfclown.bytes.Buffer(fileBytes);
+            using (org.pdfclown.files.File file = new org.pdfclown.files.File(iInputStream))
             {
                 foreach (PdfIndirectObject indirectObject in file.IndirectObjects)
                 {
