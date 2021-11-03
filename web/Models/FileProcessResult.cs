@@ -17,5 +17,6 @@ namespace web.Models
         public float AverageDiffPercent { get; set; }
         public string FinalResult { get; internal set; }
         public int TotalPages { get; internal set; }
+        public string AverageDiffPercentDisplay { get; set; }
     }
 }

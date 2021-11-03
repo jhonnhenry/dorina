@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.SignalR;
 using System.Linq;
 using System.Threading.Tasks;
 
-using web.Database;
 using System;
 using System.IO;
 using Docnet.Core;
@@ -17,6 +16,7 @@ using web.Models;
 using System.Drawing;
 using System.Drawing.Imaging;
 using Microsoft.Extensions.Configuration;
+using web.Models.DatabaseModels;
 
 namespace web.Handlers.SignalRHubs
 {
@@ -93,7 +93,7 @@ namespace web.Handlers.SignalRHubs
 
             if(File.Exists(fileFullPath))
             {
-                _context.ReceivedFiles.Add(new Database.DatabaseModels.ReceivedFile()
+                _context.ReceivedFiles.Add(new ReceivedFile()
                 {
                     Filename = filename,
                     Username = Context.User.Identity.Name,

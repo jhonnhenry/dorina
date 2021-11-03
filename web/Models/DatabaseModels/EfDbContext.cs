@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-using web.Database.DatabaseModels;
-
-namespace web.Database
+namespace web.Models.DatabaseModels
 {
     public class EfDbContext : IdentityDbContext
     {

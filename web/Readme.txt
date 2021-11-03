@@ -1,4 +1,13 @@
-﻿
+﻿/************************/
+--Migrations
+
+dotnet tool install --global dotnet-ef
+dotnet tool update --global dotnet-ef
+dotnet add package Microsoft.EntityFrameworkCore.Design
+dotnet ef migrations add m1
+dotnet ef migrations script
+dotnet ef database update
+
 
 Plugin de leitura do PDF
 https://github.com/GowenGit/docnet

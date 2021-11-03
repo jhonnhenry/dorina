@@ -5,13 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using web.Database;
 using web.Handlers;
 using web.Models;
 using System.IO;
 using Domain.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using web.Models.DatabaseModels;
 
 namespace web.Controllers
 {

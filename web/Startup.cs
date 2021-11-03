@@ -8,8 +8,8 @@ using Microsoft.Extensions.Hosting;
 
 using System;
 
-using web.Database;
 using web.Handlers.SignalRHubs;
+using web.Models.DatabaseModels;
 
 namespace web
 {
@@ -25,10 +25,9 @@ namespace web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<EfDbContext>(options =>
-
-                options.UseInMemoryDatabase("dorinadb")
-                /*options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection"))*/
+                options.UseSqlite("DataSource=Database/app.db;Cache=Shared")
+                //options.UseInMemoryDatabase("dorinadb")
+                //options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
                 );
 
 

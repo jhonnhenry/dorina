@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace web.Database.DatabaseModels
+namespace web.Models.DatabaseModels
 {
     public class ReceivedFile
     {
@@ -16,7 +16,6 @@ namespace web.Database.DatabaseModels
         [Required]
         public Guid Id { get; set; }
         [Required]
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime CreateDate { get; set; }
 
         public string Filename { get; set; }

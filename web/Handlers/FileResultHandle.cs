@@ -10,6 +10,19 @@ namespace web.Handlers
         {
             fileProcessResult.OCRSuccessAverageRate = float.Parse(fileProcessResult.PagesResult.Average(a => a.OCRSuccessRate).ToString("F0"));
             fileProcessResult.AverageDiffPercent = float.Parse(fileProcessResult.PagesResult.Average(a => a.DiffPercent).ToString("F0"));
+            
+            if(fileProcessResult.AverageDiffPercent < 60)
+            {
+                fileProcessResult.AverageDiffPercentDisplay = "Baixa";
+            }
+            else if (fileProcessResult.AverageDiffPercent >= 60 && fileProcessResult.AverageDiffPercent < 100)
+            {
+                fileProcessResult.AverageDiffPercentDisplay = "Média";
+            }
+            else
+            {
+                fileProcessResult.AverageDiffPercentDisplay = "Alta";
+            }
             fileProcessResult.FinalResult = CalcFinalResult(fileProcessResult);
             return fileProcessResult;
         }
