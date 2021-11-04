@@ -54,8 +54,9 @@ namespace web.Controllers
             return View();
         }
 
-        [Route("/Home/UploadFile")]
         [HttpPost]
+        [Route("/Home/UploadFile")]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<JsonResult> UploadFileAsync(List<IFormFile> theFile)
         {
             try

@@ -5,10 +5,12 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 
 using web.Api.Handlers;
 using web.Api.Model;
+using web.Models;
 
 namespace web.Api
 {
@@ -24,6 +26,7 @@ namespace web.Api
         }
 
         [HttpPost]
+        [ProducesResponseType(typeof(FileProcessResult), 200)]
         public async Task<IActionResult> SendAsync(List<IFormFile> file)
         {
             try
@@ -31,6 +34,11 @@ namespace web.Api
                 if (file == null || file.Count == 0)
                 {
                     throw new Exception("Você precisa informar um arquivo.");
+                }
+
+                if (file.Count > 1)
+                {
+                    throw new Exception("Você só pode enviar um arquivo por vez.");
                 }
 
                 var theFile = file[0];
@@ -44,11 +52,11 @@ namespace web.Api
 
                 string tempImagesFolder = _config.GetValue<string>("App:TempImagesFolder");
                 var resultOfProccess = await new ApiHandleFile().GetResultAsync(theFile, tempImagesFolder);
-                return Ok(resultOfProccess);
+                return StatusCode((int)HttpStatusCode.Accepted, resultOfProccess);
             }
             catch (Exception ex)
             {
-                return Ok(new ResponseApim(false, ex.Message));
+                return StatusCode((int)HttpStatusCode.InternalServerError, new ResponseApim(false, ex.Message));
             }
         }
     }

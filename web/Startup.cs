@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 
 using System;
 
@@ -56,19 +57,19 @@ namespace web
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
             );
 
-            services.AddControllers()
-                .AddNewtonsoftJson()
-                .ConfigureApiBehaviorOptions(options =>
-                {
-                    /*
-                    options.SuppressConsumesConstraintForFormFileParameters = true;
-                    options.SuppressInferBindingSourcesForParameters = true;
-                    options.SuppressModelStateInvalidFilter = true;
-                    options.SuppressMapClientErrors = true;
-                    */
-                });
+            services.AddControllers().AddNewtonsoftJson();
 
             services.AddSignalR();
+
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo()
+                {
+                    Title = "Projeto Dorina PDF",
+                    Description = "Envie um arquivo PDF e receba uma análise de sua acessibilidade.",
+                    Version = "1.0"
+                });
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -90,6 +91,13 @@ namespace web
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(options =>
+            {
+                options.RoutePrefix = "api";
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+            });
 
             app.UseEndpoints(endpoints =>
             {
