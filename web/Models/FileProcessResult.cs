@@ -18,5 +18,6 @@ namespace web.Models
         public string FinalResult { get; internal set; }
         public int TotalPages { get; internal set; }
         public string AverageDiffPercentDisplay { get; set; }
+        public string Text { get; set; }
     }
 }

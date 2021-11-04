@@ -172,7 +172,9 @@ namespace web.Handlers.SignalRHubs
                                 FinalResult = PageResultHandle.CalcResult(diffPercent),
                                 Base64Image = imageBase64
                             };
+
                             fileProcessResult.PagesResult.Add(pageProcessResult);
+                            fileProcessResult.Text += pageProcessResult.Text;
 
                             int percent = (int)((((decimal)i + 1.0m) / (decimal)totalPages) * 100);
 

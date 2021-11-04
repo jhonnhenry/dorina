@@ -78,7 +78,7 @@ async function startConnection() {
         $('.fileProcessPage').fadeIn();
         console.log("SignalR Connected.");
     }).catch(function (err) {
-        showClientMessage('A não!','Não foi possível se comunicar com nosso servidor! Tente verificar sua conexão com a internet.','error'        );
+        showClientMessage('A não!','Não foi possível se comunicar com nosso servidor! Tente verificar sua conexão com a internet.','error');
         setTimeout(function () { startConnection(); }, 6000);
         return console.error(err.toString());
     });
@@ -205,6 +205,14 @@ $(document).ready(function () {
     loading(true);
 });
 
+
+function copyToClipboard() {
+    var copyText = document.getElementById("copyToClipboardInput");
+    copyText.select();
+    copyText.setSelectionRange(0, 99999); /* For mobile devices */
+    navigator.clipboard.writeText(copyText.value);
+    showClientMessage('Sucesso!', 'O texto do arquivo foi copiado para a área de transferência.', 'info');
+}
 
 
 function toggleButtonById(btnId, enable) {

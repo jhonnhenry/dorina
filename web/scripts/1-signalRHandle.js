@@ -11,7 +11,7 @@ async function startConnection() {
         $('.fileProcessPage').fadeIn();
         console.log("SignalR Connected.");
     }).catch(function (err) {
-        showClientMessage('A não!','Não foi possível se comunicar com nosso servidor! Tente verificar sua conexão com a internet.','error'        );
+        showClientMessage('A não!','Não foi possível se comunicar com nosso servidor! Tente verificar sua conexão com a internet.','error');
         setTimeout(function () { startConnection(); }, 6000);
         return console.error(err.toString());
     });
