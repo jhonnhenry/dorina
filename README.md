@@ -15,7 +15,7 @@ Uma homenagem a Dorina de Gouvêa Nowill[^1] (São Paulo, 28 de maio de 1919 —
 
 
 ## Objetivo
-Proporcionar ao diversos operadores dos sistemas administrativos e jurídicos, sendo eles deficientes ou não, uma ferramenta de analise textual capaz de identificar o nível de acessibilidade de um documento PDF.
+Proporcionar aos diversos operadores dos sistemas administrativos e jurídicos, sendo eles deficientes ou não, uma ferramenta de analise textual capaz de identificar o nível de acessibilidade de um documento PDF.
 
 
 ## Parceria
