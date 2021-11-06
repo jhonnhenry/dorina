@@ -3,8 +3,6 @@
 </p>
 
 
-![Isso é uma imagem](https://dorinapdf.azurewebsites.net/img/dorinalogoNobg.png)
-
 # Dorina PDF
 
 
@@ -21,8 +19,8 @@ Proporcionar ao diversos operadores dos sistemas administrativos e jurídicos, s
 
 
 ## Parceria
--**Tribunal de Justiça do Tocantins**
--**Defensoria Pública do Estado do Tocantins**
+- **Tribunal de Justiça do Tocantins**
+- **Defensoria Pública do Estado do Tocantins**
 
 
 ## Temos um versão publicada aqui
@@ -37,8 +35,10 @@ Proporcionar ao diversos operadores dos sistemas administrativos e jurídicos, s
 
 Para mais informações, entre em contato com um dos desenvolvedores.
 
--Jhonatas Lima <jhlmota@gmail.com>
--Angelo Stacciarini <astacciarini@gmail.com>
+- Jhonatas Lima <jhlmota@gmail.com>
+- Angelo Stacciarini <astacciarini@gmail.com>
+
+
 
 
 
