@@ -15,7 +15,7 @@ using web.Models;
 namespace web.Api
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     public class UploadController : ControllerBase
     {
         private readonly IConfiguration _config;
@@ -27,23 +27,16 @@ namespace web.Api
 
         [HttpPost]
         [ProducesResponseType(typeof(FileProcessResult), 200)]
-        public async Task<IActionResult> SendAsync(List<IFormFile> file)
+        public async Task<IActionResult> SendAsync(IFormFile file)
         {
             try
             {
-                if (file == null || file.Count == 0)
+                if (file == null)
                 {
                     throw new Exception("Você precisa informar um arquivo.");
                 }
 
-                if (file.Count > 1)
-                {
-                    throw new Exception("Você só pode enviar um arquivo por vez.");
-                }
-
-                var theFile = file[0];
-
-                var ext = Path.GetExtension(theFile.FileName).ToLowerInvariant();
+                var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
 
                 if (string.IsNullOrEmpty(ext) || ext != ".pdf")
                 {
@@ -51,7 +44,7 @@ namespace web.Api
                 }
 
                 string tempImagesFolder = _config.GetValue<string>("App:TempImagesFolder");
-                var resultOfProccess = await new ApiHandleFile().GetResultAsync(theFile, tempImagesFolder);
+                var resultOfProccess = await new ApiHandleFile().GetResultAsync(file, tempImagesFolder);
                 return StatusCode((int)HttpStatusCode.Accepted, resultOfProccess);
             }
             catch (Exception ex)

@@ -12,24 +12,29 @@
               method="post">
             <dl>
                 <dt>
-                    <label for="theFile">Escolha o arquivo PDF a ser enviado</label>
+                    <label class="form-label" for="theFile">Escolha o arquivo PDF a ser enviado</label>
                 </dt>
                 <dd>
                     <input type="file"
                            id="theFile"
                            name="theFile"
+                           class="form-control"
                            onchange="validateFile(this)" />
                 </dd>
             </dl>
             <button class="btn btn-primary btn-lg" type="submit">Enviar arquivo PDF</button>
             <div class="linespacer-x"></div>
-            <div class="spinner-border" role="status" style="display:none;">
-                <span class="visually-hidden">Iniciando...</span>
-            </div>
+
         </form>
     </div>
 
     <div id="statusAlert" class="alert alert-success" role="alert" style="display:none;">
+    </div>
+
+    <div class="text-center">
+        <div class="spinner-border" role="status" style="display:none;">
+            <span class="visually-hidden">Iniciando...</span>
+        </div>
     </div>
 
     <div class="progress" style="display:none;">
@@ -95,7 +100,10 @@
 
         <br />
         <hr />
-        <a href="/api"><h4>Conheça nossa API</h4></a>
+        <a target="_blank" href="/api"><h5>Conheça nossa API</h5></a>
+        <br />
+        <a target="_blank" href="https://github.com/jhonnhenry/dorinapdf"><h5>Conheça o repositório do projeto</h5></a>
+
     </div>
 
 </div>

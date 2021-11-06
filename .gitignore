@@ -9,7 +9,7 @@
 Config/
 bin/
 obj/
-properties/PublishProfiles/*
+web/properties/PublishProfiles/
 TempFileFolder/
 TempImagesFolder/
 Database/

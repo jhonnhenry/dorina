@@ -436,6 +436,7 @@ function writeFileResult(fileProcessResult) {
     var htmlObject = document.createElement('div');
     htmlObject.innerHTML = html;
     document.getElementById('fileProcessResultContainer').append(htmlObject);
+    $('.spinner-border').fadeOut();
     $('#fileProcessResultContainer').fadeIn();
     $('#tips').fadeIn();
 }
@@ -447,6 +448,5 @@ function writePageResult(pageProcessResult) {
     htmlObject.innerHTML = html;
     document.getElementById('accordionExample').append(htmlObject);
     $('#accordionExample').fadeIn();
-    $('.spinner-border').fadeOut();
     $('html, body').animate({ scrollTop: 620 }, 1000);
 }

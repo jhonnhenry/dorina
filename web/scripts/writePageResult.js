@@ -6,6 +6,5 @@
     htmlObject.innerHTML = html;
     document.getElementById('accordionExample').append(htmlObject);
     $('#accordionExample').fadeIn();
-    $('.spinner-border').fadeOut();
     $('html, body').animate({ scrollTop: 620 }, 1000);
 }

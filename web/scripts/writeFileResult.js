@@ -7,6 +7,7 @@
     var htmlObject = document.createElement('div');
     htmlObject.innerHTML = html;
     document.getElementById('fileProcessResultContainer').append(htmlObject);
+    $('.spinner-border').fadeOut();
     $('#fileProcessResultContainer').fadeIn();
     $('#tips').fadeIn();
 }
