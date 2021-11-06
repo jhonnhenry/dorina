@@ -7,7 +7,7 @@ html {
 
 body {
     margin-bottom: 60px;
-    background-color: #e1e1e1;
+    background-color: #fff;
 }
 
 /* Provide sufficient contrast against white background */
@@ -35,4 +35,38 @@ a.navbar-brand {
 
 .pnotify-text-with-max-height {
     overflow: hidden !important;
+}
+
+
+.section-about {
+    padding: 35px;
+    background-color: #f0f1f3;
+}
+
+.section-top-frontpage {
+    position: relative;
+    padding-top: 10px;
+    background: #179a99 url(../img/hero-bg.svg) no-repeat center;
+    background-size: cover;
+
+    header {
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+
+        .logoimg {
+            width: 200px;
+        }
+
+        .slogan {
+            font-size: 31px;
+            color: white;
+            font-weight: bold;
+        }
+    }
+}
+
+.waveimg {
+    vertical-align: middle;
+    border-style: none;
 }

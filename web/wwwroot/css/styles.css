@@ -3,7 +3,8 @@
   flex-flow: row wrap;
   justify-content: center;
   text-align: center;
-  line-height: 3; }
+  line-height: 3;
+  margin: 50px 0; }
   .fileuploadcontainer label {
     font-size: 16px; }
 
@@ -154,7 +155,20 @@
 @media only screen and (max-width: 960px) {
   html {
     font-size: 16px;
-    background-color: lightblue; } }
+    background-color: #fff; } }
+
+.parallaxbg {
+  line-height: 77px;
+  min-height: 200px;
+  margin-top: 80px;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position-y: top;
+  background-position-x: top;
+  background-image: url(/img/paralaxbg.jpg);
+  color: white; }
 
 .processResultContainer {
   display: flex;
@@ -168,7 +182,7 @@ html {
 
 body {
   margin-bottom: 60px;
-  background-color: #e1e1e1; }
+  background-color: #fff; }
 
 /* Provide sufficient contrast against white background */
 a {
@@ -191,6 +205,30 @@ a.navbar-brand {
 
 .pnotify-text-with-max-height {
   overflow: hidden !important; }
+
+.section-about {
+  padding: 35px;
+  background-color: #f0f1f3; }
+
+.section-top-frontpage {
+  position: relative;
+  padding-top: 10px;
+  background: #179a99 url(../img/hero-bg.svg) no-repeat center;
+  background-size: cover; }
+  .section-top-frontpage header {
+    display: flex;
+    align-items: center;
+    justify-content: space-around; }
+    .section-top-frontpage header .logoimg {
+      width: 200px; }
+    .section-top-frontpage header .slogan {
+      font-size: 31px;
+      color: white;
+      font-weight: bold; }
+
+.waveimg {
+  vertical-align: middle;
+  border-style: none; }
 
 .linespacer-x {
   min-height: 30px; }

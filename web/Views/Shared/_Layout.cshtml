@@ -3,28 +3,32 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="shortcut icon" href="img/acessibilidade.png" />
+    <link rel="shortcut icon" href="img/dorinalogoNobg200x180.png" />
     <title>@ViewData["Title"] - Dorina PDF</title>
     <partial name="_allStylesPartial" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Projeto Dorina PDF</a>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+
+    <div class="section-top-frontpage">
+        <header>
+            <figure><img class="logoimg" src="~/img/dorinalogoNobg.png" alt="Projeto Dorina"></figure>
+            <span class="slogan">Saiba ae seu PDF é acessível</span>
+        </header>
+        <figure class="waveimg"><img src="~/img/wave.svg" alt="wave-image"></figure>
     </div>
+
+
+    <main role="main">
+        @RenderBody()
+    </main>
+
     <div class="image-viewer-container" onclick="$(this).hide()">
         <span class="close">&times;</span>
         <img class="image-viewer-modal-content image-viewer-full-image">
     </div>
+
     <partial name="_FooterPartial" />
+
     <partial name="_allScriptsPartial" />
     @await RenderSectionAsync("Scripts", required: false)
 </body>
