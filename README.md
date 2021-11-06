@@ -23,6 +23,10 @@ Proporcionar ao diversos operadores dos sistemas administrativos e jurídicos, s
 - **Defensoria Pública do Estado do Tocantins**
 
 
+## A ideia deste projeto foi concebida a partir da publicação desta resolução
+<a href="https://atos.cnj.jus.br/atos/detalhar/3987" target="_blank">Resolução Nº 401 de 16/06/2021</a>
+
+
 ## Temos um versão publicada aqui
 [Projeto Dorina PDF](https://dorinapdf.azurewebsites.net/)
 
