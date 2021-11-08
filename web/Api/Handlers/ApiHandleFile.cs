@@ -22,7 +22,7 @@ namespace web.Api.Handlers
             {
                 Success = true,
                 Filename = theFile.FileName,
-                Message = "Arquivo processado com sucesso"
+                Message = "Arquivo analisado com sucesso"
             };
 
             try

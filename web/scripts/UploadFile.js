@@ -128,7 +128,7 @@
                                     console.log(progress);
                                     notice.update({
                                         title: 'Ok',
-                                        text: 'O Processamento do seu arquivo foi cancelado.',
+                                        text: 'A análise do seu arquivo foi cancelada.',
                                         icon: true,
                                         closer: true,
                                         sticker: true,
@@ -143,7 +143,7 @@
                             text: 'Não',
                             click: notice => notice.update({
                                 title: 'Ok',
-                                text: 'Aguarde a conclusão do processamento.',
+                                text: 'Aguarde a conclusão da análise.',
                                 icon: true,
                                 closer: true,
                                 sticker: true,

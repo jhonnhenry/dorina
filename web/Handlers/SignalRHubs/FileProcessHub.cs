@@ -83,7 +83,7 @@ namespace web.Handlers.SignalRHubs
             filename = filename.ToOnlyText();
             await Clients.User(Context.UserIdentifier)
                         .SendAsync("ReceiveMessage", CommunicationHandle
-                        .Send("Ok", "Iniciamos o processamento do seu arquivo! Acompanhe o progresso!"));
+                        .Send("Ok", "Iniciamos a análise do seu arquivo! Acompanhe o progresso abaixo!"));
 
             string tempFileFolder = _config.GetValue<string>("App:TempFileFolder");
             var tempFileFolderPath = Path.GetFullPath(tempFileFolder);
@@ -102,7 +102,7 @@ namespace web.Handlers.SignalRHubs
             }
             else
             {
-                throw new Exception($"Houve um erro ao processar o arquivo.");
+                throw new Exception($"Houve um erro ao analisar o arquivo.");
             }
 
             byte[] bytesOfFile = FileStreamHandle.GetAsByteArray(fileFullPath);
@@ -119,7 +119,7 @@ namespace web.Handlers.SignalRHubs
             {
                 Success = true,
                 ImagesFound = CountImagesHandle.GetTotal(fileFullPath),
-                Message = "Arquivo processado com sucesso",
+                Message = "Arquivo analisado com sucesso",
                 TotalPages = totalPages
             };
 
@@ -131,8 +131,7 @@ namespace web.Handlers.SignalRHubs
 
                     //Get the text of page
                     var pdfText = pageReader.GetText();
-                    if (pdfText.Length == 0)
-                        pdfText = "-";
+
 
                     //Make a image from page
                     var width = pageReader.GetPageWidth();
@@ -156,8 +155,9 @@ namespace web.Handlers.SignalRHubs
                             //Get the text of image
                             string theTextOfImage = page.GetText();
 
-                            var diff = theTextOfImage.Length - pdfText.Length;
-                            var diffPercent = (int)(((decimal)diff / (decimal)pdfText.Length) * 100);
+
+                            var diff = theTextOfImage.Length - (pdfText.Length == 0 ? 1 : pdfText.Length);
+                            var diffPercent = (int)(((decimal)diff / (decimal)(pdfText.Length == 0 ? 1 : pdfText.Length)) * 100);
                             var OCRSuccessRate = page.GetMeanConfidence();
 
                             var pageProcessResult = new PageProcessResult()
@@ -181,7 +181,7 @@ namespace web.Handlers.SignalRHubs
 
                             await Clients.User(Context.UserIdentifier).SendAsync("UpdateStatus",
                                 percent,
-                                $"Terminamos de processar a página {i + 1}");
+                                $"Terminamos de analisar a página {i + 1}");
 
                             await Clients.User(Context.UserIdentifier).SendAsync("WritePageResult",
                                 pageProcessResult);
@@ -203,11 +203,11 @@ namespace web.Handlers.SignalRHubs
             fileProcessResult = FileResultHandle.CalcResult(fileProcessResult);
             await Clients.User(Context.UserIdentifier).SendAsync("WriteFileResult", fileProcessResult);
 
-            await Clients.User(Context.UserIdentifier).SendAsync("UpdateStatus", 0, "O processamento do seu arquivo foi finalizado!");
+            await Clients.User(Context.UserIdentifier).SendAsync("UpdateStatus", 0, "A análise do seu arquivo foi finalizada!");
             FinalizeProcess(filename);
             await Clients.User(Context.UserIdentifier)
                             .SendAsync("ReceiveMessage", CommunicationHandle
-                            .Send("Sucesso", "O processamento do seu arquivo foi finalizado!"));
+                            .Send("Sucesso", "A análise do seu arquivo foi finalizada!"));
             await Clients.User(Context.UserIdentifier).SendAsync("FinalizeProcess");
 
             var exists = _context.ReceivedFiles.FirstOrDefault(f =>

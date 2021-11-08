@@ -76,7 +76,7 @@ namespace web.Controllers
                     f.Username.Equals(User.Identity.Name));
                 if (exists != null)
                 {
-                    throw new Exception("Você só pode pode processar um arquivo por vez.");
+                    throw new Exception("Você só pode analisar um arquivo por vez.");
                 }
 
                 if (!System.IO.File.Exists(fileFolderPath))

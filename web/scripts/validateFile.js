@@ -20,8 +20,8 @@ function validateExtension(file) {
 }
 
 function validateSize(file) {
-    if (file.size / 1024 / 1024 > 5) {
-        showClientMessage("Atenção", "O tamanho do arquivo não pode exceder 5MB");
+    if (file.size / 1024 / 1024 > 10) {
+        showClientMessage("Atenção", "O tamanho do arquivo não pode exceder 10MB");
         return false;
     }
 }
