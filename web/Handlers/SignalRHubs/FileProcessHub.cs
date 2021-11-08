@@ -175,6 +175,7 @@ namespace web.Handlers.SignalRHubs
 
                             fileProcessResult.PagesResult.Add(pageProcessResult);
                             fileProcessResult.Text += pageProcessResult.Text;
+                            fileProcessResult.OCRText += pageProcessResult.OCRText;
 
                             int percent = (int)((((decimal)i + 1.0m) / (decimal)totalPages) * 100);
 

@@ -10,6 +10,7 @@ Config/
 bin/
 obj/
 web/properties/PublishProfiles/
+web/wwwroot/js
 TempFileFolder/
 TempImagesFolder/
 Database/

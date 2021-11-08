@@ -15,9 +15,10 @@ namespace web.Models
         public int ImagesFound { get; set; }
         public float OCRSuccessAverageRate { get; set; }
         public float AverageDiffPercent { get; set; }
-        public string FinalResult { get; internal set; }
-        public int TotalPages { get; internal set; }
+        public string FinalResult { get; set; }
+        public int TotalPages { get; set; }
         public string AverageDiffPercentDisplay { get; set; }
         public string Text { get; set; }
+        public string OCRText { get; set; }
     }
 }
