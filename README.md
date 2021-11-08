@@ -15,12 +15,16 @@ Uma homenagem a Dorina de Gouvêa Nowill[^1] (São Paulo, 28 de maio de 1919 —
 
 
 ## Objetivo
-Proporcionar ao diversos operadores dos sistemas administrativos e jurídicos, sendo eles deficientes ou não, uma ferramenta de analise textual capaz de identificar o nível de acessibilidade de um documento PDF.
+Proporcionar aos diversos operadores dos sistemas administrativos e jurídicos, sendo eles deficientes ou não, uma ferramenta de analise textual capaz de identificar o nível de acessibilidade de um documento PDF.
 
 
 ## Parceria
 - **Tribunal de Justiça do Tocantins**
 - **Defensoria Pública do Estado do Tocantins**
+
+
+## A ideia deste projeto foi concebida a partir da publicação desta resolução
+<a href="https://atos.cnj.jus.br/atos/detalhar/3987" target="_blank">Resolução Nº 401 de 16/06/2021</a>
 
 
 ## Temos um versão publicada aqui
