@@ -7,6 +7,7 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
+
 COPY ["dorinapdf.csproj", "dorinapdf/"]
 RUN dotnet restore "./web.csproj"
 COPY . .
