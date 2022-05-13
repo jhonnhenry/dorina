@@ -11,7 +11,7 @@ WORKDIR /src
 COPY ["web.csproj", ""]
 RUN dotnet restore "./web.csproj"
 COPY . .
-WORKDIR "/src/web"
+WORKDIR "/src/."
 RUN dotnet build "web.csproj" -c Release -o /app/build
 
 FROM build AS publish
