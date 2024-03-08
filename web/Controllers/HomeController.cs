@@ -33,6 +33,10 @@ namespace web.Controllers
             _config = config;
         }
 
+        public IActionResult Error()
+        {
+            return View();
+        }
 
         public async Task<IActionResult> IndexAsync()
         {
